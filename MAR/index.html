@@ -17,7 +17,7 @@
 </head>
 
 <body>
-    <h2 style="color:green">MAR Certificate Generator</h2>
+    <h2 style="color:green">PDF Generator</h2>
     <div class="container" style="margin: 20px;">
         <label for="activitySerial">Activity Serial Number:</label><br>
         <input type="text" id="activitySerial"><br><br>
@@ -118,7 +118,7 @@
                     const img = new Image();
                     img.src = imageData;
                     img.onload = function() {
-                        const width = 100; // Adjust as needed
+                        const width = 80; // Adjust as needed
                         const height = (img.height * width) / img.width;
                         doc.addImage(img, 'JPEG', 20, yPos += 10, width, height); // Adjusted left margin
                         // Add Link section
