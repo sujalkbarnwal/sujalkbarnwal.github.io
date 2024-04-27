@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>
+		MAR Certificate Generator
+	</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<script src=
+"https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js">
+	</script>
+	<script src=
+"https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
+	</script>
+</head>
+
+<body>
+    <h2 style="color:green">MAR Certificate Generator</h2>
+    <div class="container" style="margin: 20px;">
+        <label for="activitySerial">Activity Serial Number:</label><br>
+        <input type="text" id="activitySerial"><br><br>
+
+        <label for="activityName">Activity Name:</label><br>
+        <input type="text" id="activityName"><br><br>
+
+        <label for="dateOfActivity">Date of Activity:</label><br>
+        <input type="date" id="dateOfActivity"><br><br>
+
+        <label for="activityPoint">Activity Point:</label><br>
+        <input type="text" id="activityPoint"><br><br>
+
+        <label for="studentName">Student Name:</label><br>
+        <input type="text" id="studentName"><br><br>
+
+        <label for="rollNumber">Student University Roll Number:</label><br>
+        <input type="text" id="rollNumber"><br><br>
+
+        <label for="department">Department:</label><br>
+        <input type="text" id="department"><br><br>
+
+        <label for="year">Year:</label><br>
+        <input type="text" id="year"><br><br>
+
+        <label for="semester">Semester:</label><br>
+        <input type="text" id="semester"><br><br>
+
+        <label for="certificateImage">Picture of the certificate:</label><br>
+        <input type="file" id="certificateImage" accept="image/*"><br><br>
+
+        <label for="link">Link (if any):</label><br>
+        <input type="text" id="link" value=""><br><br>
+
+        <label for="signature">Signature:</label><br>
+        <input type="file" id="signatureImage" accept="image/*"><br><br>
+
+        <label for="date">Date:</label><br>
+        <input type="date" id="date"><br><br>
+
+        <button onclick="generatePDF()">Generate PDF</button>
+    </div>
+
+    <script>
+        function generatePDF() {
+            const activitySerial = document.getElementById('activitySerial').value;
+            const activityName = document.getElementById('activityName').value;
+            const dateOfActivity = document.getElementById('dateOfActivity').value;
+            const activityPoint = document.getElementById('activityPoint').value;
+            const studentName = document.getElementById('studentName').value;
+            const rollNumber = document.getElementById('rollNumber').value;
+            const department = document.getElementById('department').value;
+            const year = document.getElementById('year').value;
+            const semester = document.getElementById('semester').value;
+            const certificateImageInput = document.getElementById('certificateImage');
+            const certificateImageFile = certificateImageInput.files[0];
+            const link = document.getElementById('link').value;
+            const signatureInput = document.getElementById('signatureImage');
+            const signatureImageFile = signatureInput.files[0];
+            const date = document.getElementById('date').value;
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            doc.setFont("Times New Roman");
+            doc.setFontSize(11);
+
+            let yPos = 30; // Increased margin from top
+
+            // Add Activity Serial Number
+            doc.text(`Activity Serial Number: ${activitySerial}`, 20, yPos += 10); // Adjusted left margin
+            // Add Activity Name
+            doc.text(`Activity Name: ${activityName}`, 20, yPos += 10);
+            // Add Date of Activity
+            doc.text(`Date of Activity: ${dateOfActivity}`, 20, yPos += 10);
+            // Add Activity Point
+            doc.text(`Activity Point: ${activityPoint}`, 20, yPos += 10);
+            // Add Student Name
+            doc.text(`Student Name: ${studentName}`, 20, yPos += 10);
+            // Add Student University Roll Number
+            doc.text(`Student University Roll Number: ${rollNumber}`, 20, yPos += 10);
+            // Add Department
+            doc.text(`Department: ${department}`, 20, yPos += 10);
+            // Add Year
+            doc.text(`Year: ${year}`, 20, yPos += 10);
+            // Add Semester
+            doc.text(`Semester: ${semester}`, 20, yPos += 10);
+
+            // Add Picture of the certificate
+            if (certificateImageFile) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const imageData = event.target.result;
+                    const img = new Image();
+                    img.src = imageData;
+                    img.onload = function() {
+                        const width = 100; // Adjust as needed
+                        const height = (img.height * width) / img.width;
+                        doc.addImage(img, 'JPEG', 20, yPos += 10, width, height); // Adjusted left margin
+                        // Add Link section
+                        doc.text(`Link (if any): ${link}`, 20, yPos += height + 10); // Adjusted left margin
+                        // Add Signature label
+                        doc.text("Signature:", 20, yPos += 10); // Adjusted left margin
+                        // Add Signature
+                        if (signatureImageFile) {
+                            const signatureReader = new FileReader();
+                            signatureReader.onload = function(signatureEvent) {
+                                const signatureImageData = signatureEvent.target.result;
+                                const signatureImg = new Image();
+                                signatureImg.src = signatureImageData;
+                                signatureImg.onload = function() {
+                                    const signatureWidth = 30; // Adjust as needed
+                                    const signatureHeight = (signatureImg.height * signatureWidth) / signatureImg.width;
+                                    doc.addImage(signatureImg, 'JPEG', 20, yPos += 5, signatureWidth, signatureHeight); // Adjusted left margin
+                                    // Add Date
+                                    doc.text(`Date: ${date}`, 20, yPos += signatureHeight + 10); // Adjusted left margin
+                                    doc.save('certificate.pdf');
+                                };
+                            };
+                            signatureReader.readAsDataURL(signatureImageFile);
+                        } else {
+                            doc.text(`Date: ${date}`, 20, yPos += 10); // Adjusted left margin
+                            doc.save('certificate.pdf');
+                        }
+                    };
+                };
+                reader.readAsDataURL(certificateImageFile);
+            } else {
+                // Add Link section
+                doc.text(`Link (if any): ${link}`, 20, yPos += 10); // Adjusted left margin
+                // Add Signature label
+                doc.text("Signature:", 20, yPos += 10); // Adjusted left margin
+                // Add Signature
+                if (signatureImageFile) {
+                    const signatureReader = new FileReader();
+                    signatureReader.onload = function(signatureEvent) {
+                        const signatureImageData = signatureEvent.target.result;
+                        const signatureImg = new Image();
+                        signatureImg.src = signatureImageData;
+                        signatureImg.onload = function() {
+                            const signatureWidth = 30; // Adjust as needed
+                            const signatureHeight = (signatureImg.height * signatureWidth) / signatureImg.width;
+                            doc.addImage(signatureImg, 'JPEG', 20, yPos += 5, signatureWidth, signatureHeight); // Adjusted left margin
+                            // Add Date
+                            doc.text(`Date: ${date}`, 20, yPos += signatureHeight + 10); // Adjusted left margin
+                            doc.save('certificate.pdf');
+                        };
+                    };
+                    signatureReader.readAsDataURL(signatureImageFile);
+                } else {
+                    doc.text(`Date: ${date}`, 20, yPos += 10); // Adjusted left margin
+                    doc.save('certificate.pdf');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
