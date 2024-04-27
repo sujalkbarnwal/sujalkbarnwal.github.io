@@ -43,7 +43,7 @@
         <label for="year">Year:</label><br>
         <input type="text" id="year"><br><br>
 
-        <label for="semester">Sem:</label><br>
+        <label for="semester">Semester:</label><br>
         <input type="text" id="semester"><br><br>
 
         <label for="certificateImage">Picture of the certificate:</label><br>
@@ -65,7 +65,8 @@
         function generatePDF() {
             const activitySerial = document.getElementById('activitySerial').value;
             const activityName = document.getElementById('activityName').value;
-            const dateOfActivity = document.getElementById('dateOfActivity').value;
+            const rawDateOfActivity = new Date(document.getElementById('dateOfActivity').value);
+            const formattedDateOfActivity = `${rawDateOfActivity.getDate().toString().padStart(2, '0')}/${(rawDateOfActivity.getMonth() + 1).toString().padStart(2, '0')}/${rawDateOfActivity.getFullYear()}`;
             const activityPoint = document.getElementById('activityPoint').value;
             const studentName = document.getElementById('studentName').value;
             const rollNumber = document.getElementById('rollNumber').value;
@@ -77,7 +78,8 @@
             const link = document.getElementById('link').value;
             const signatureInput = document.getElementById('signatureImage');
             const signatureImageFile = signatureInput.files[0];
-            const date = document.getElementById('date').value;
+            const rawDate = new Date(document.getElementById('date').value);
+            const formattedDate = `${rawDate.getDate().toString().padStart(2, '0')}/${(rawDate.getMonth() + 1).toString().padStart(2, '0')}/${rawDate.getFullYear()}`;
 
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({
@@ -96,7 +98,7 @@
             // Add Activity Name
             doc.text(`Activity Name: ${activityName}`, 20, yPos += 10);
             // Add Date of Activity
-            doc.text(`Date of Activity: ${dateOfActivity}`, 20, yPos += 10);
+            doc.text(`Date of Activity: ${formattedDateOfActivity}`, 20, yPos += 10);
             // Add Activity Point
             doc.text(`Activity Point: ${activityPoint}`, 20, yPos += 10);
             // Add Student Name
@@ -137,13 +139,13 @@
                                     const signatureHeight = (signatureImg.height * signatureWidth) / signatureImg.width;
                                     doc.addImage(signatureImg, 'JPEG', 20, yPos += 5, signatureWidth, signatureHeight); // Adjusted left margin
                                     // Add Date
-                                    doc.text(`Date: ${date}`, 20, yPos += signatureHeight + 10); // Adjusted left margin
+                                    doc.text(`Date: ${formattedDate}`, 20, yPos += signatureHeight + 10); // Adjusted left margin
                                     doc.save('certificate.pdf');
                                 };
                             };
                             signatureReader.readAsDataURL(signatureImageFile);
                         } else {
-                            doc.text(`Date: ${date}`, 20, yPos += 10); // Adjusted left margin
+                            doc.text(`Date: ${formattedDate}`, 20, yPos += 10); // Adjusted left margin
                             doc.save('certificate.pdf');
                         }
                     };
@@ -166,13 +168,13 @@
                             const signatureHeight = (signatureImg.height * signatureWidth) / signatureImg.width;
                             doc.addImage(signatureImg, 'JPEG', 20, yPos += 5, signatureWidth, signatureHeight); // Adjusted left margin
                             // Add Date
-                            doc.text(`Date: ${date}`, 20, yPos += signatureHeight + 10); // Adjusted left margin
+                            doc.text(`Date: ${formattedDate}`, 20, yPos += signatureHeight + 10); // Adjusted left margin
                             doc.save('certificate.pdf');
                         };
                     };
                     signatureReader.readAsDataURL(signatureImageFile);
                 } else {
-                    doc.text(`Date: ${date}`, 20, yPos += 10); // Adjusted left margin
+                    doc.text(`Date: ${formattedDate}`, 20, yPos += 10); // Adjusted left margin
                     doc.save('certificate.pdf');
                 }
             }
